@@ -1,138 +1,146 @@
-import java.util.*;
+import java.util.Scanner;
 
-public class matrixproductJava{
-
-	public static void OnMult(int m_ar, int m_br) {
-		
-		long Time1, Time2;
-
-		double temp;
-		int i, j, k;
-
-		double[] pha = new double[m_ar*m_ar];
-		double[] phb = new double[m_ar*m_ar];
-		double[] phc = new double[m_ar*m_ar];
-
-		for(i=0; i<m_ar; i++)
-			for(j=0; j<m_ar; j++)
-				pha[i*m_ar + j] = (double)1.0;
-
-		for(i=0; i<m_br; i++)
-			for(j=0; j<m_br; j++)
-				phb[i*m_br + j] = (double)(i+1);
-
-		Time1 = System.currentTimeMillis();
-
-		for(i=0; i<m_ar; i++){
-			for(j=0; j<m_br; j++){
-				temp = 0;
-				for( k=0; k<m_ar; k++)
-				{	
-					temp += pha[i*m_ar+k] * phb[k*m_br+j];
-				}
-				phc[i*m_ar+j]=temp;
-			}
-		}
-
-		Time2 = System.currentTimeMillis();
-
-		System.out.printf("Time: %3.3f seconds\n", (double)(Time2-Time1)/1000);
-		
-		System.out.println("Result matrix: ");
-		for (i = 0; i < 1; i++) {
-			for (j = 0; j < Math.min(10, m_br); j++) {
-				System.out.print(phc[j] + " ");
-			}
-		}
-		System.out.println();
-	}
-
-	public static void OnMultLine(int m_ar, int m_br) {
-		long Time1, Time2;
-
-		String st; // not used. keeping here just in case
-		double temp;
-		int i, j, k;
-
-		double[] pha = new double[m_ar*m_ar];
-		double[] phb = new double[m_ar*m_ar];
-		double[] phc = new double[m_ar*m_ar];
-
-		for(i=0; i<m_ar; i++)
-			for(j=0; j<m_ar; j++)
-				pha[i*m_ar + j] = (double)1.0;
-
-		for(i=0; i<m_br; i++)
-			for(j=0; j<m_br; j++)
-				phb[i*m_br + j] = (double)(i+1);
-		
-		for(i=0; i<m_ar; i++)
-			for(j=0; j<m_ar; j++)
-				phc[i*m_ar + j] = (double)0;
-
-		Time1 = System.currentTimeMillis();
-
-		for(i=0; i<m_ar; i++)
-		{
-			for( k=0; k<m_ar; k++)
-			{	
-				for(j=0; j<m_br; j++)
-				{
-					phc[i*m_ar+j] += pha[i*m_ar+k] * phb[k*m_br+j];
-				}
-			}
-		}
-
-		Time2 = System.currentTimeMillis();
-
-		System.out.printf("Time: %3.3f seconds\n", (double)(Time2-Time1)/1000);
-		
-		System.out.println("Result matrix: ");
-		for (i = 0; i < 1; i++) {
-			for (j = 0; j < Math.min(10, m_br); j++) {
-				System.out.print(phc[j] + " ");
-			}
-		}
-		System.out.println();
-	}
-
-
-
-	public static void main(String[] args) {	
-	
-		char c;
-		int lin, col, blockSize;
-		int op;
-
-		long[] values = new long[20];
-		int ret;
-		
-		Scanner stdin = new Scanner(System.in);
-
-		op=1;
-		do{
-			System.out.println("1. Multiplication");
-			System.out.println("2. Line Multiplication");
-
-			System.out.print("Selection?: ");
-			op = stdin.nextInt();
-
-			if(op==0) 
-				break;
-
-			System.out.print("Dimensions: lins=cols ? ");
-			lin = stdin.nextInt();
-			col = lin;
-
-			switch (op){
-				case 1: 
-					OnMult(lin, col);
-					break;
-				case 2:
-					OnMultLine(lin, col);  
-					break;
-			}
-		} while (op != 0);
-	}
-
+public class MatrixMultiplication {
+    
+    public static void onMult(int size) {
+        double[][] A = new double[size][size];
+        double[][] B = new double[size][size];
+        double[][] C = new double[size][size];
+        
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                A[i][j] = 1.0;
+                B[i][j] = i + 1;
+            }
+        }
+        
+        long startTime = System.nanoTime();
+        
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                double temp = 0;
+                for (int k = 0; k < size; k++) {
+                    temp += A[i][k] * B[k][j];
+                }
+                C[i][j] = temp;
+            }
+        }
+        
+        long endTime = System.nanoTime();
+        System.out.printf("Time: %.3f seconds\n", (endTime - startTime) / 1e9);
+        
+        System.out.println("Result matrix: ");
+        for (int j = 0; j < Math.min(10, size); j++) {
+            System.out.print(C[0][j] + " ");
+        }
+        System.out.println();
+    }
+    
+    public static void onMultLine(int size) {
+        double[][] A = new double[size][size];
+        double[][] B = new double[size][size];
+        double[][] C = new double[size][size];
+        
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                A[i][j] = 1.0;
+                B[i][j] = i + 1;
+            }
+        }
+        
+        long startTime = System.nanoTime();
+        
+        for (int i = 0; i < size; i++) {
+            for (int k = 0; k < size; k++) {
+                double temp = A[i][k];
+                for (int j = 0; j < size; j++) {
+                    C[i][j] += temp * B[k][j];
+                }
+            }
+        }
+        
+        long endTime = System.nanoTime();
+        System.out.printf("Time: %.3f seconds\n", (endTime - startTime) / 1e9);
+        
+        System.out.println("Result matrix: ");
+        for (int j = 0; j < Math.min(10, size); j++) {
+            System.out.print(C[0][j] + " ");
+        }
+        System.out.println();
+    }
+    
+    public static void onMultBlock(int size, int blockSize) {
+        double[][] A = new double[size][size];
+        double[][] B = new double[size][size];
+        double[][] C = new double[size][size];
+        
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                A[i][j] = 1.0;
+                B[i][j] = i + 1;
+            }
+        }
+        
+        long startTime = System.nanoTime();
+        
+        for (int i_bk = 0; i_bk < size; i_bk += blockSize) {
+            for (int k_bk = 0; k_bk < size; k_bk += blockSize) {
+                for (int j_bk = 0; j_bk < size; j_bk += blockSize) {
+                    for (int i = i_bk; i < Math.min(i_bk + blockSize, size); i++) {
+                        for (int k = k_bk; k < Math.min(k_bk + blockSize, size); k++) {
+                            double temp = A[i][k];
+                            for (int j = j_bk; j < Math.min(j_bk + blockSize, size); j++) {
+                                C[i][j] += temp * B[k][j];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        long endTime = System.nanoTime();
+        System.out.printf("Time: %.3f seconds\n", (endTime - startTime) / 1e9);
+        
+        System.out.println("Result matrix: ");
+        for (int j = 0; j < Math.min(10, size); j++) {
+            System.out.print(C[0][j] + " ");
+        }
+        System.out.println();
+    }
+    
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int option;
+        
+        do {
+            System.out.println("\n1. Multiplication");
+            System.out.println("2. Line Multiplication");
+            System.out.println("3. Block Multiplication");
+            System.out.print("Selection?: ");
+            option = scanner.nextInt();
+            
+            if (option == 0) break;
+            
+            System.out.print("Dimensions: lins=cols ? ");
+            int size = scanner.nextInt();
+            
+            switch (option) {
+                case 1:
+                    onMult(size);
+                    break;
+                case 2:
+                    onMultLine(size);
+                    break;
+                case 3:
+                    System.out.print("Block Size? ");
+                    int blockSize = scanner.nextInt();
+                    onMultBlock(size, blockSize);
+                    break;
+                default:
+                    System.out.println("Invalid option!");
+            }
+        } while (option != 0);
+        
+        scanner.close();
+    }
 }
